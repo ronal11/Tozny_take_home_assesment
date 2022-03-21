@@ -288,6 +288,6 @@ elif sys.argv[1] == "result" or sys.argv[1] == "Result":
         winner = results(rnd_result, 'Winner')
         print("Bruce read result for round {0}, Winner: {1}".format(resultRound, winner))
     else:
-        print()
+        print("Player does not exist")
 else:
     print('Only parameters "move" , "result" , or "judge" are available')
