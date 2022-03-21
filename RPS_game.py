@@ -2,7 +2,7 @@ import e3db
 from e3db.types import Search
 import sys
 
-
+# check number of records for a given search 
 
 def rnd_check(res):
     i = 0
@@ -10,7 +10,7 @@ def rnd_check(res):
         i += 1
     return i
 
-# function assumes there will only be one record for any given round
+# function assumes there will only be one record for any given round, returns value of desired key
 
 
 def results(res, key):
@@ -105,7 +105,6 @@ if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
         while flag == True:
             if move == 'rock' or move == 'scissors' or move == 'paper':
                 flag = False
-                print("correct input")
             else:
                 print("incorrect input(note: lowercase only)")
                 move = input("Whats your move, rock, paper, or scissors?: ")
@@ -116,6 +115,7 @@ if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
             'Name': client_name
         }
         record = client.write(record_type, data, meta_data)
+        print("Round {0} Move {1} submitted for Alicia ".format(roundNum, move))
 
     elif (name == "Bruce") or (name == "bruce"):
         record_type = 'moves'
@@ -139,7 +139,6 @@ if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
         while flag == True:
             if move == 'rock' or move == 'scissors' or move == 'paper':
                 flag = False
-                print("correct input")
             else:
                 print("incorrect input(note: lowercase only)")
                 move = input("Whats your move, rock, paper, or scissors?: ")
@@ -150,6 +149,7 @@ if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
             'Name': client_name3
         }
         record = client3.write(record_type, data, meta_data)
+        print("Round {0} Move {1} submitted for Bruce ".format(roundNum, move))
     else:
         print("Player does not exist")
 elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
@@ -199,7 +199,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "rock") and (a_move == "paper"):
         judge_data = {
             "Winner": "Alicia"
@@ -208,7 +208,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "rock") and (a_move == "scissors"):
         judge_data = {
             "Winner": "Bruce"
@@ -217,7 +217,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "paper") and (a_move == "rock"):
         judge_data = {
             "Winner": "Bruce"
@@ -226,7 +226,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "paper") and (a_move == "scissors"):
         judge_data = {
             "Winner": "Alicia"
@@ -235,7 +235,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "scissors") and (a_move == "rock"):
         judge_data = {
             "Winner": "Alicia"
@@ -244,7 +244,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+        
     elif (b_move == "scissors") and (a_move == "paper"):
         judge_data = {
             "Winner": "Bruce"
@@ -253,7 +253,7 @@ elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
             "Round": round2judge
         }
         record = client2.write(record_type, judge_data, meta)
-        print(record)
+
     print("Round Judged: ", round2judge)
 
 elif sys.argv[1] == "result" or sys.argv[1] == "Result":
