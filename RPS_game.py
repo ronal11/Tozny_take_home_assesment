@@ -1,8 +1,11 @@
 import e3db
 from e3db.types import Search
 import sys
+import os
+import json
 
-# check number of records for a given search 
+# check number of records for a given search
+
 
 def rnd_check(res):
     i = 0
@@ -10,7 +13,7 @@ def rnd_check(res):
         i += 1
     return i
 
-# function assumes there will only be one record for any given round, returns value of desired key
+# function assumes there will only be one record for any given round
 
 
 def results(res, key):
@@ -18,274 +21,263 @@ def results(res, key):
         value = rec.data[key]
     return value
 
-
-api_url = "https://api.e3db.com"
-# credentials for Alicia
-client_name = 'Alicia'
-clientID = "c319cd6f-ac62-4092-adf7-5b5c3a588385"
-apiKeyID = "4ea62ead2b09f57032db940f4109d7d3f4c1f964476201d0e781b517d4c5925f"
-apiSecret = "8d6b12046d7bbaf17194f4302da096a874da9d1a15444b473cc26e88dd004b7c"
-publicKey = "0Btda54-NibL9OIuqQ8U5GtIZJsYZQF5QHMke_z4028"
-privateKey = "yg091RB1ay6bV9ZrjpK9Qg-NatlyM2V8B3qIr_vyAFY"
-
-config = e3db.Config(
-    clientID,
-    apiKeyID,
-    apiSecret,
-    publicKey,
-    privateKey,
-    api_url
-)
-client = e3db.Client(config())    # config for Alicia
-
-# credentials for Clarence
-client_name2 = 'Clarence'
-clientID2 = "d8cf355f-b54d-4e33-ba07-984280f5690e"
-apiKeyID2 = "a10813f22b9bcbade3ad9e9611e18ce115d681eccc21e8bf5c10bc93ba3931a9"
-apiSecret2 = "846837bd7fa6840726402dcef18a81bc37a790f0179da6f11aca9995bd283ece"
-publicKey2 = "i8_dqpiOLiYU4UutdtnCzbnwigt7p8vJQR-sCOeuy1Y"
-privateKey2 = "0qd0xOsmvov_3fO1aLbtr_2_BK97sTzcSJQE8_47dfE"
+# function checks if a round exists when a player is choosing a round to make a move for 
 
 
-config2 = e3db.Config(
-    clientID2,
-    apiKeyID2,
-    apiSecret2,
-    publicKey2,
-    privateKey2,
-    api_url
-)
-client2 = e3db.Client(config2())        # config for Clarence
-
-# Credentials for Bruce
-client_name3 = 'Bruce'
-clientID3 = "5cd1b4d3-f92c-4a9a-907a-b71557a1adce"
-apiKeyID3 = "f9cd8d03a36f6b94926412a4b74354e7faf3d48199c492735a0886c29b796ba7"
-apiSecret3 = "8baaed16b14c4448d2673a5096a40ce830a857384e6661464a88395ae612fed7"
-publicKey3 = "i8D_gWfdui3mgw3j8blbDPINn7AjdKl4BdSWMfMVkiw"
-privateKey3 = "nCFfOATneN0l9OE2gZSTkQZ7lcnQxDyvbWNehoYcG08"
-
-config3 = e3db.Config(
-    clientID3,
-    apiKeyID3,
-    apiSecret3,
-    publicKey3,
-    privateKey3,
-    api_url
-)
-client3 = e3db.Client(config3())    # config for bruce
-
-# client.share("moves", clientID2) Alice sharing records with Judge
-# client3.share("moves", clientID2) Bruce sharing records with Judge
-# client2.share("Result", clientID3) Judge sharing records with Bruce
-# client2.share("Result", clientID) Judge sharing records with Alice
-
-if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
-    name = input('enter the name of the player: ')
+def chk_4_round(client, player, roundnum):
     flag = True
-    rndcheck = True
 
-    if (name == "Alicia") or (name == "alicia"):
-        record_type = 'moves'
-
-        roundNum = input("Enter the round number: ")
-
-        while(rndcheck == True):
-            rnd_query = Search(include_data=True, include_all_writers=True). \
-                match(condition="AND", strategy="EXACT", values=[roundNum, "Alicia"])
-
-            search = client.search(rnd_query)
-            num = rnd_check(search)
-            if num == 0:
-                rndcheck = False
-            else:
-                roundNum = input("This round already exists, please enter new round number: ")
-
-        move = input("Whats your move, rock, paper, or scissors?: ")
-        while flag == True:
-            if move == 'rock' or move == 'scissors' or move == 'paper':
-                flag = False
-            else:
-                print("incorrect input(note: lowercase only)")
-                move = input("Whats your move, rock, paper, or scissors?: ")
-
-        data = {'Move': move}
-        meta_data = {
-            'Round': roundNum,
-            'Name': client_name
-        }
-        record = client.write(record_type, data, meta_data)
-        print("Round {0} Move {1} submitted for Alicia ".format(roundNum, move))
-
-    elif (name == "Bruce") or (name == "bruce"):
-        record_type = 'moves'
-
-        roundNum = input("Enter the round number: ")
-
-        while (rndcheck == True):
-            rnd_query = Search(include_data=True, include_all_writers=True). \
-                match(condition="AND", strategy="EXACT", values=[roundNum, "Bruce"])
-
-            search = client3.search(rnd_query)
-            num = rnd_check(search)
-
-
-            if num == 0:
-                rndcheck = False
-            else:
-                roundNum = input("This round already exists, please enter new round number: ")
-
-        move = input("Whats your move, rock, paper, or scissors?: ")
-        while flag == True:
-            if move == 'rock' or move == 'scissors' or move == 'paper':
-                flag = False
-            else:
-                print("incorrect input(note: lowercase only)")
-                move = input("Whats your move, rock, paper, or scissors?: ")
-
-        data = {'Move': move}
-        meta_data = {
-            'Round': roundNum,
-            'Name': client_name3
-        }
-        record = client3.write(record_type, data, meta_data)
-        print("Round {0} Move {1} submitted for Bruce ".format(roundNum, move))
-    else:
-        print("Player does not exist")
-elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
-    check = True
-    round2judge = input("enter number of round you want to judge: ")
-
-    while (check == True):
+    while flag == True:
         rnd_query = Search(include_data=True, include_all_writers=True). \
-            match(condition="AND", strategy="EXACT", record_types=["Result"], values=[round2judge])
+            match(condition="AND", strategy="EXACT", values=[roundnum, player])
 
-        search = client2.search(rnd_query)
+        search = client.search(rnd_query)
+        num = rnd_check(search)
+        if num == 0:
+            flag = False
+        else:
+            roundnum = input("This round already exists, please enter new round number: ")
+    return roundnum
+
+#  function makes sure player move input is correct
+
+
+def chk_move(move2chk):
+    flag = True
+
+    while flag == True:
+        if move2chk == 'rock' or move2chk == 'scissors' or move2chk == 'paper':
+            flag = False
+        else:
+            print("incorrect input(note: lowercase only)")
+            move2chk = input("Whats your move, rock, paper, or scissors?: ")
+    return move2chk
+
+# function initializes client credentials and makes sure path exists 
+
+
+def chk_credentials(file_path):
+    credentials_path = file_path # your e3db credentialss
+    if os.path.exists(credentials_path):
+        client = e3db.Client(json.load(open(credentials_path)))
+        return client
+    else:
+        print("Filepath doesn't not exist")
+        quit()
+
+# function submits a move for the player for a given round 
+
+
+def submit_move(client, client_name, move, roundnum):
+    record_type = "moves"
+
+    data = {'Move': move}
+    meta_data = {
+        'Round': roundnum,
+        'Name': client_name
+    }
+    record = client.write(record_type, data, meta_data)
+    print("Round {0} Move {1} submitted for {2} ".format(roundnum, move, client_name))
+
+# function checks if a round has been judged, used when judge inputs which round he/she wants to judge
+
+
+def isRoundJudged(client, roundnum):
+    flag = True
+    while (flag == True):
+        rnd_query = Search(include_data=True, include_all_writers=True). \
+            match(condition="AND", strategy="EXACT", record_types=["Result"], values=[roundnum])
+
+        search = client.search(rnd_query)
         num = rnd_check(search)
 
         if num == 0:
-            check = False
+            flag = False
         else:
-            round2judge = input("This round has been judged, please enter new round number: ")
+            roundnum = input("This round has been judged, please enter new round number: ")
+    return roundnum
 
-    bruce_query = Search(include_data=True, include_all_writers=True).\
-        match(condition="AND", strategy="EXACT", values=[round2judge, "Bruce"])
+# used by player to see if a round has been judged, when choosing which round to get a result from 
 
-    alicia_query = Search(include_data=True, include_all_writers=True). \
-        match(condition="AND", strategy="EXACT", values=[round2judge, "Alicia"])
+
+def player_rnd_chk(client, resultRound):
+    query = Search(include_data=True, include_all_writers=True). \
+        match(condition="AND", strategy="EXACT", record_types=["Result"], values=[resultRound])
+
+    rnd_result = client.search(query)
+
+    num1 = rnd_check(rnd_result)
+    if num1 == 0:
+        print("This round has yet to be judged.")
+        quit()
+    return rnd_result
+
+# this function searches for moves based on player name and round number meta-data, used by judge
+
+
+def search4moves(client, player_name, roundnum):
+    query = Search(include_data=True, include_all_writers=True). \
+        match(condition="AND", strategy="EXACT", values=[roundnum, player_name])
 
     # judge performs searches for records from Alicia and Bruce for the round chosen
-    results1 = client2.search(bruce_query)
-    results2 = client2.search(alicia_query)
+    result = client.search(query)
 
-    num1 = rnd_check(results1)
-    num2 = rnd_check(results2)
+    return result
+
+# checks if a move had been made by both players for a given round, used by judge before judging any round
+
+
+def chk_if_moves_made(player1_results, player2_results):
+    num1 = rnd_check(player1_results)
+    num2 = rnd_check(player2_results)
     if num1 == 0 or num2 == 0:
         print("One or two players have yet to make a move for this round")
         quit()
 
-    b_move = results(results1, 'Move')
-    a_move = results(results2, 'Move')
+# this function judges and submits result according to player moves 
 
-    print("Alicia move: ", a_move)
-    print("Bruce move: ", b_move)
+
+def judge_round(client, player1, player2, move1, move2, roundnum):
     record_type = "Result"
 
-    if b_move == a_move:
+    if move1 == move2:
         judge_data = {
             "Winner": "Draw"
         }
         meta = {
-            "Round": round2judge
+            "Round": roundnum
         }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "rock") and (a_move == "paper"):
-        judge_data = {
-            "Winner": "Alicia"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "rock") and (a_move == "scissors"):
-        judge_data = {
-            "Winner": "Bruce"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "paper") and (a_move == "rock"):
-        judge_data = {
-            "Winner": "Bruce"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "paper") and (a_move == "scissors"):
-        judge_data = {
-            "Winner": "Alicia"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "scissors") and (a_move == "rock"):
-        judge_data = {
-            "Winner": "Alicia"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
-        
-    elif (b_move == "scissors") and (a_move == "paper"):
-        judge_data = {
-            "Winner": "Bruce"
-        }
-        meta = {
-            "Round": round2judge
-        }
-        record = client2.write(record_type, judge_data, meta)
+        record = client.write(record_type, judge_data, meta)
 
-    print("Round Judged: ", round2judge)
+    elif (move1 == "rock") and (move2 == "paper"):
+        judge_data = {
+            "Winner": player2
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
 
-elif sys.argv[1] == "result" or sys.argv[1] == "Result":
-    resultRound = input('Enter round number to get result of: ')
+    elif (move1 == "rock") and (move2 == "scissors"):
+        judge_data = {
+            "Winner": player1
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
+
+    elif (move1 == "paper") and (move2 == "rock"):
+        judge_data = {
+            "Winner": player1
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
+
+    elif (move1 == "paper") and (move2 == "scissors"):
+        judge_data = {
+            "Winner": player2
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
+
+    elif (move1 == "scissors") and (move2 == "rock"):
+        judge_data = {
+            "Winner": player2
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
+
+    elif (move1 == "scissors") and (move2 == "paper"):
+        judge_data = {
+            "Winner": player1
+        }
+        meta = {
+            "Round": roundnum
+        }
+        record = client.write(record_type, judge_data, meta)
+
+    print("Round Judged: ", roundnum)
+
+api_url = "https://api.e3db.com"
+
+
+# client.share("moves", clientID2) Alice sharing records with Judge
+# client3.share("moves", clientID2) Bruce sharing records with Judge
+#client2.share("Result", clientID3) Judge sharing records with Bruce
+#client2.share("Result", clientID) Judge sharing records with Alice
+
+# start of program
+
+if sys.argv[1] == 'move' or sys.argv[1] == 'Move':
+    name = input('enter the name of the player: ')
+
+    if (name == "Alicia") or (name == "alicia"):
+        client = chk_credentials(sys.argv[2])               # get credentials 
+        client_name = "Alicia"
+
+        temp = input("Enter the round number: ")    
+        roundNum = chk_4_round(client, client_name, temp)   # get round number 
+
+        temp = input("Whats your move, rock, paper, or scissors?: ")
+        move = chk_move(temp)                                # get move 
+
+        submit_move(client, client_name, move, roundNum)     # submit move 
+
+    elif (name == "Bruce") or (name == "bruce"):
+        client3 = chk_credentials(sys.argv[2])               # get credentials 
+        client_name3 = "Bruce"
+
+        temp = input("Enter the round number: ")
+        roundNum = chk_4_round(client3, client_name3, temp)  # get round number
+
+        temp = input("Whats your move, rock, paper, or scissors?: ")
+        move = chk_move(temp)                                # get move
+
+        submit_move(client3, client_name3, move, roundNum)   # submit move 
+    else:
+        print("Player does not exist")
+elif sys.argv[1] == "judge" or sys.argv[1] == "Judge":
+    client2 = chk_credentials(sys.argv[2])
+
+    temp = input("enter number of round you want to judge: ")
+    round2judge = isRoundJudged(client2, temp)              # get round to judge 
+
+    results1 = search4moves(client2, "Bruce", round2judge)  # search for move made by both players 
+    results2 = search4moves(client2, "Alicia", round2judge)
+
+    chk_if_moves_made(results1, results2)                   # check if moves have been made by both players 
+
+    b_move = results(results1, 'Move')                      # get moves 
+    a_move = results(results2, 'Move')
+
+    print("Alicia move: ", a_move)
+    print("Bruce move: ", b_move)
+
+    judge_round(client2, "Bruce", "Alicia", b_move, a_move, round2judge)    # submit judged round 
+
+elif sys.argv[1] == "result" or sys.argv[1] == "Result":        # get credentials 
+    client = chk_credentials(sys.argv[2])
+
+    resultRound = input('Enter round number to get result of: ')    # get round number and player name 
     name = input("Enter your name (Alicia or Bruce): ")
 
     if name == "alicia" or name == "Alicia":
-        alica_search = Search(include_data=True, include_all_writers=True). \
-            match(condition="AND", strategy="EXACT", record_types=["Result"], values=[resultRound])
+        result = player_rnd_chk(client, resultRound)                # check if round has been judged 
 
-        rnd_result = client.search(alica_search)
-
-        num1 = rnd_check(rnd_result)
-        if num1 == 0:
-            print("This round has yet to be judged.")
-            quit()
-
-        winner = results(rnd_result, 'Winner')
+        winner = results(result, 'Winner')                          # get and print winner 
         print("Alicia read result for round {0}, Winner: {1}".format(resultRound, winner))
 
     elif name == "bruce" or name == "Bruce":
-        bruce_search = Search(include_data=True, include_all_writers=True). \
-            match(condition="AND", strategy="EXACT", record_types=["Result"], values=[resultRound])
+        result = player_rnd_chk(client, resultRound)                # check if round has been judged 
 
-        rnd_result = client3.search(bruce_search)
-
-        num1 = rnd_check(rnd_result)
-        if num1 == 0:
-            print("This round has yet to be judged.")
-            quit()
-
-        winner = results(rnd_result, 'Winner')
+        winner = results(result, 'Winner')                          # get and print winner 
         print("Bruce read result for round {0}, Winner: {1}".format(resultRound, winner))
     else:
         print("Player does not exist")
